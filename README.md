@@ -263,6 +263,10 @@ This library is fully typed and provides TypeScript definitions out of the box. 
 
 Contributions are welcome! Please feel free to submit a Pull Request
 
+## Used by
+
+This lib is used as util library in [green_dot backend framework](https://github.com/topkat/green_dot)
+
 ## License
 
 MIT
