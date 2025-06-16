@@ -183,6 +183,16 @@ recursiveGenericFunctionSync(
     }
 )
 ```
+- `safeWhile`: A safer version of while loop that prevents infinite loops by limiting the maximum number of iterations
+```typescript
+// Count up to 10
+let i = 0;
+safeWhile(
+  () => i < 10,
+  () => i++,
+  { nbRecursionMax: 100 } // Optional: maximum iterations before exiting
+);
+```
 
 ### Date Operations
 - `getDateAsInt(date)`: Convert date to integer format (20290101)
@@ -233,7 +243,7 @@ urlPathJoin('https://api.example.com//v1', '/users/', 'userId') // => 'https://a
 - `upperCase(str)`: `upperCase('HelloWorld' as const) // type: 'HELLOWORLD'` (Equivalent of type `UpperCase<MyString>`)
 - `objEntries(obj)`: In JS object entries are not correctly typed (`Object.entries({ a: 1, b: true }) // type: [string, number | boolean]`). With this function we are typed like `objEntries({ a: 1, b: true }) // ["a", number] | ["b", boolean]`
 - `objKeys`: In JS object keys are not correctly typed (`Object.keys({ a: 1, b: 2 }) // type: string`). With this function we are typed like `objKeys({ a: 1, b: 2 }) // type: 'a' | 'b'`
-- `includes(str)`: Fix this always happening ts error when using includes and your search string is not typed as an array element (which is very dumb IMO)
+- `includes(array, item)`: Fix this always happening ts error when using includes and your search string is not typed as an array element (which is very dumb IMO)
 
 ## Configuration
 

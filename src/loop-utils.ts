@@ -175,10 +175,10 @@ export function recursiveGenericFunctionSync(item: ObjectGeneric | any[], callba
  *   () => i++
  * );
  */
-export function safeWhile(conditionFn: () => boolean, callback: () => any, { nbRecursionMax = 100 } = {}) {
+export function safeWhile(conditionFn: () => boolean, callback: (i: number) => any, { nbRecursionMax = 100 } = {}) {
     let nbRecursion = 0
     while (conditionFn() && nbRecursion++ < nbRecursionMax) {
-        callback()
+        callback(nbRecursion)
         // eslint-disable-next-line no-console
         if (nbRecursion === nbRecursionMax - 1) console.warn(`Too much recursion for while loop, exiting...`)
     }
