@@ -55,7 +55,7 @@
     "bump:minor": "yarn test:ci && yarn build && bump --minor",
     "bump:patch": "yarn test:ci && yarn build && bump --patch",
     "test": "jest --watchAll",
-    "test:ci": "jest --ci --runInBand --maxConcurrency=1 --silent"
+    "test:ci": "jest --ci --runInBand --maxConcurrency=1 --silent --no-watchman"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
