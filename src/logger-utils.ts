@@ -211,8 +211,16 @@ function logErrPrivate(level: NotInfoLogLevel, color: Color, ...errors) {
             if (stkTrc) stackTrace = stkTrc
             return str
         } else if (typeof err === 'object') {
+
             let msg = ''
-            msg += removeCircularJSONstringify(err, 2).split('\n').map(val => C.dim(val)).join('\n') + '\n'
+            msg += removeCircularJSONstringify(err, 2)
+            if (msg === '{}' && Object.getOwnPropertySymbols(err).length) {
+                // very weird behavior sometimes you can't log an error via console.error but this s**t works
+                const errProp = err[Object.getOwnPropertySymbols(err)[0]]
+                if (typeof errProp === 'function') msg = errProp()
+                else msg = errProp
+            }
+            msg = msg.split('\n').map(val => C.dim(val)).join('\n') + '\n'
             const { str, stackTrace: stkTrc } = stringifyExtraInfos(err.extraInfo || err, level, color)
             if (stkTrc) stackTrace = stkTrc
             msg += str
