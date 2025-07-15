@@ -83,7 +83,10 @@ export class DescriptiveError<ExpectedOriginalError = any> extends Error {
     doNotLog = false // just an alias for the above, actually using this one can be more readable in some situations
     logs: string[] = []
 
-    isDescriptiveError = true
+    readonly isDescriptiveError = true
+
+    /** This for client usage, and is not used by DescriptiveError. It can be used to mark an error as handled by your system. */
+    isHandled = false
 
     constructor(message: string, options: ErrorOptions = {}) {
         super(message)
