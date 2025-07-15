@@ -83,6 +83,8 @@ export class DescriptiveError<ExpectedOriginalError = any> extends Error {
     doNotLog = false // just an alias for the above, actually using this one can be more readable in some situations
     logs: string[] = []
 
+    isDescriptiveError = true
+
     constructor(message: string, options: ErrorOptions = {}) {
         super(message)
         delete options.errMsgId
