@@ -29,7 +29,7 @@ export function simpleObjectMaskOrSelect<Obj extends ObjectGeneric>(
         keysToMask.forEach(keyNameToDelete => delete object[keyNameToDelete])
         return object
     } else {
-        return allKeys.reduce((newObject, key) => {
+        return allKeys.reduce((newObject: Record<string, any>, key) => {
             if (!keysToMask.includes(key)) newObject[key] = object[key]
             return newObject
         }, {}) as Obj
@@ -93,7 +93,7 @@ export function findByAddressAll<ReturnAddresses extends boolean = false>(
 /** Enforce writing subItems. Eg: user.name.blah will ensure all are set until the writing of the last item
  * NOTE: doesn't work when parent is array
  */
-export function objForceWrite<MainObj extends Record<string, any>>(obj: MainObj, addr: string, item, options: { doNotWriteFinalValue?: boolean } = {}): MainObj {
+export function objForceWrite<MainObj extends Record<string, any>>(obj: MainObj, addr: string, item: any, options: { doNotWriteFinalValue?: boolean } = {}): MainObj {
     const { doNotWriteFinalValue = false } = options
     const writeFinalValue = !doNotWriteFinalValue
 
@@ -129,13 +129,13 @@ export const objForceWritePath = forcePathInObject
  * if user.name.blah has a value it will not change it.
  * NOTE: doesn't work when parent is array
  */
-export function objForceWriteIfNotSet<MainObj extends Record<string, any>>(obj: MainObj, addr: string, item): MainObj {
+export function objForceWriteIfNotSet<MainObj extends Record<string, any>>(obj: MainObj, addr: string, item: any): MainObj {
     if (!isset(findByAddress(obj, addr))) return objForceWrite(obj, addr, item)
     else return obj
 }
 
 /** Merge mixins into class. Use it in the constructor like: mergeMixins(this, {myMixin: true}) */
-export function mergeMixins(that, ...mixins) {
+export function mergeMixins(that: any, ...mixins: any[]) {
     mixins.forEach(mixin => {
         for (const method in mixin) {
             that[method] = mixin[method]
@@ -187,7 +187,7 @@ export function deepClone<MainObj extends Record<string, any>>(obj: MainObj, cac
  * @param {Object} obj the object on which we want to filter the keys
  * @param {function} filterFunc function that returns true if the key match the wanted criteria
  */
-export function filterKeys<MainObj extends Record<string, any>>(obj: MainObj, filter): MainObj {
+export function filterKeys<MainObj extends Record<string, any>>(obj: MainObj, filter: any): MainObj {
     const clone = cloneObject(obj)
     recursiveGenericFunctionSync(obj, (_, addr, lastElementKey) => {
         if (!filter(lastElementKey)) deleteByAddress(clone, addr.split('.'))
@@ -199,7 +199,7 @@ export function filterKeys<MainObj extends Record<string, any>>(obj: MainObj, fi
  * @param {Array} addrArr addressArray on which to delete the property
  */
 export function deleteByAddress(obj: object, addr: string | string[]) {
-    let current = obj
+    let current = obj as Record<string, any>
     const addrArr = Array.isArray(addr) ? addr : addr.split('.')
     for (let i = 0; i < addrArr.length; i++) {
         const currentAddr = addrArr[i].replace(/(\[|\])/g, '')
@@ -227,9 +227,9 @@ export function readOnly<MainObj extends Record<string, any>>(o: MainObj): { rea
 }
 
 /** Fields of the object can be created BUT NOT reassignated */
-export function reassignForbidden(o) {
+export function reassignForbidden(o: Record<string, any>) {
     return new Proxy(o, {
-        defineProperty: function (that, key, value) {
+        defineProperty: function (that: Record<string, any>, key: string, value) {
             if (key in that) throw new DescriptiveError(`Cannot reassign the property ${key.toString()} of this object`, { code: 500 })
             else {
                 that[key] = value
@@ -243,9 +243,9 @@ export function reassignForbidden(o) {
 }
 
 /** All fileds and subFields of the object will become readOnly */
-export function readOnlyRecursive(object) {
+export function readOnlyRecursive(object: Record<string, any>) {
     recursiveGenericFunctionSync(object, (item, _, lastElementKey, parent) => {
-        if (typeof item === 'object') parent[lastElementKey] = readOnly(item)
+        if (typeof item === 'object' && parent) (parent as any)[lastElementKey] = readOnly(item)
     })
     return object
 }
@@ -253,7 +253,7 @@ export function readOnlyRecursive(object) {
 /** @deprecated use readOnlyRecursive instead */
 export const readOnlyForAll = readOnlyRecursive
 
-export function objFilterUndefinedRecursive(obj) {
+export function objFilterUndefinedRecursive(obj: Record<string, any>) {
     if (obj) {
         const flattenedObj = flattenObject(obj)
         Object.keys(flattenedObj).forEach(key => {
@@ -265,8 +265,8 @@ export function objFilterUndefinedRecursive(obj) {
     } else return obj
 }
 
-export function sortObjKeyAccordingToValue(unorderedObj, ascending = true) {
-    const orderedObj = {}
+export function sortObjKeyAccordingToValue(unorderedObj: Record<string, any>, ascending = true) {
+    const orderedObj = {} as Record<string, any>
     const sortingConst = ascending ? 1 : -1
     Object.keys(unorderedObj)
         .sort((keyA, keyB) => unorderedObj[keyA] < unorderedObj[keyB] ? sortingConst : -sortingConst)
@@ -285,7 +285,7 @@ export function sortObjKeyAccordingToValue(unorderedObj, ascending = true) {
 export function ensureObjectProp<MainObj extends Record<string, any>, Addr extends string>(
     obj: MainObj,
     addr: Addr,
-    defaultValue,
+    defaultValue: any,
     callback: (o: any) => any
 ): MainObj[Addr] {
     err500IfNotSet({ obj, addr, defaultValue, callback })
@@ -309,7 +309,7 @@ export function mergeDeep<
 >(...objects: [O1, O2?, O3?, O4?, O5?, O6?]): O1 & O2 & O3 & O4 & O5 & O6 {
     return mergeDeepConfigurable(
         (previousVal, currentVal) => [...previousVal, ...currentVal].filter((elm, i, arr) => arr.indexOf(elm) === i),
-        (previousVal, currentVal) => mergeDeep(previousVal, currentVal),
+        (previousVal: any, currentVal: any) => mergeDeep(previousVal, currentVal),
         undefined,
         ...objects
     )
@@ -329,7 +329,7 @@ export function mergeDeepOverrideArrays<
 >(...objects: [O1, O2?, O3?, O4?, O5?, O6?]): O1 & O2 & O3 & O4 & O5 & O6 {
     return mergeDeepConfigurable(
         undefined,
-        (previousVal, currentVal) => mergeDeepOverrideArrays(previousVal, currentVal),
+        (previousVal: any, currentVal: any) => mergeDeepOverrideArrays(previousVal, currentVal),
         undefined,
         ...objects
     )
@@ -351,11 +351,11 @@ export function mergeDeepConfigurable<
     O5 extends Record<string, any> = Record<string, any>,
     O6 extends Record<string, any> = Record<string, any>,
 >(
-    replacerForArrays = (_, curr) => curr, replacerForObjects,
-    replacerDefault = (_, curr) => curr,
+    replacerForArrays = (_: any, curr: any) => curr, replacerForObjects: any,
+    replacerDefault = (_: any, curr: any) => curr,
     ...objects: [O1, O2?, O3?, O4?, O5?, O6?]
 ): O1 & O2 & O3 & O4 & O5 & O6 {
-    return objects.reduce((actuallyMerged, obj) => {
+    return objects.reduce((actuallyMerged: Record<string, any>, obj) => {
         if (obj && typeof obj === 'object') Object.keys(obj).forEach(key => {
             const previousVal = actuallyMerged[key]
             const currentVal = obj[key]
@@ -376,11 +376,11 @@ export function mergeDeepConfigurable<
 /** { a: {b:2}} => {'a.b':2} useful for translations
  * NOTE: will remove circular references
  */
-export function flattenObject(data, config: { withoutArraySyntax?: boolean, withArraySyntaxMinified?: boolean } = {}): Record<string, any> {
+export function flattenObject(data: any, config: { withoutArraySyntax?: boolean, withArraySyntaxMinified?: boolean } = {}): Record<string, any> {
     const { withoutArraySyntax = false, withArraySyntaxMinified = false } = config
-    const result = {}
+    const result = {} as Record<string, any>
     const seenObjects: any[] = [] // avoidCircular reference to infinite loop
-    const recurse = (cur, prop) => {
+    const recurse = (cur: any, prop: string) => {
         if (Array.isArray(cur)) {
             const l = cur.length
             let i = 0

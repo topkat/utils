@@ -8,7 +8,7 @@ import { err422IfNotSet } from './error-utils'
 
 const int = parseInt
 
-export function getDateAsInt12(dateAllFormat?: Date | string | number, errIfNotValid?): string { return getDateAsInt(dateAllFormat, errIfNotValid, true) } // alias
+export function getDateAsInt12(dateAllFormat?: Date | string | number, errIfNotValid?: any): string { return getDateAsInt(dateAllFormat, errIfNotValid, true) } // alias
 
 export function humanReadableTimestamp(dateAllFormat: any): number {
     if (isset(dateAllFormat)) dateAllFormat = getDateAsObject(dateAllFormat)
@@ -70,7 +70,7 @@ export function getDateAsObject(dateAllFormat: any = new Date(), errIfNotValid$ 
 }
 
 /** [2018,01,06] */
-export function dateStringToArray(strOrInt) {
+export function dateStringToArray(strOrInt: string | number) {
     err422IfNotSet({ strOrInt })
 
     const dateStr = strOrInt.toString()
@@ -116,7 +116,7 @@ export function dateArrayInt(dateAllFormat: Date | string | number = getDateAsIn
 export function dateFormatted(dateAllFormat: Date | string | number, separator = '/') { return dateArray(dateAllFormat).join(separator) }
 
 /** Date with custom offset (Ex: +2 for France) */
-export function dateOffset(offsetHours, dateObj = new Date()) {
+export function dateOffset(offsetHours: number, dateObj = new Date()) {
 
     const utc = Date.UTC(dateObj.getUTCFullYear(), dateObj.getUTCMonth(), dateObj.getUTCDate(),
         dateObj.getUTCHours(), dateObj.getUTCMinutes(), dateObj.getUTCSeconds())
@@ -148,7 +148,7 @@ export function getIntAsTime(intOrDateTimeInt = getDateAsInt12(), separator = ':
     return time.substring(tl - 4, tl - 2) + separator + time.substring(tl - 2, tl)
 }
 
-export function isTimeStringValid(timeStr, outputAnError$ = false) {
+export function isTimeStringValid(timeStr: string, outputAnError$ = false) {
     const timeArr = timeStr.split(':')
     const h = int(timeArr[0])
     const m = int(timeArr[1])
@@ -162,7 +162,7 @@ export function isTimeStringValid(timeStr, outputAnError$ = false) {
 // DURATIONS
 //----------------------------------------
 
-export function getDuration(startDate, endDate, inMinutes = false) {
+export function getDuration(startDate: any, endDate: any, inMinutes = false) {
     const startDateO = getDateAsObject(startDate)
     const endDateO = getDateAsObject(endDate)
     const diffInSec = Math.floor(endDateO.getTime() / 1000) - Math.floor(startDateO.getTime() / 1000)
@@ -175,6 +175,8 @@ export function getDuration(startDate, endDate, inMinutes = false) {
     ]
 }
 
+
+type DateEvent = { startDate: any, endDate: any }
 /** compare two object with DATE INT, if they overlap return true
  * @param {Object} event1 {startDate, endDate}
  * @param {Object} event2 {startDate, endDate}
@@ -183,7 +185,7 @@ export function getDuration(startDate, endDate, inMinutes = false) {
  * @param {Boolean} allowNull$ if false, retrun false if any of the startdates or enddates are not set
  * @param {Boolean} strict$ if true,
  */
-export function doDateOverlap(event1, event2, fieldNameForStartDate$ = 'startDate', fieldNameForEndDate$ = 'endDate', allowNull$ = true, strict$ = false) {
+export function doDateOverlap(event1: DateEvent, event2: DateEvent, fieldNameForStartDate$ = 'startDate' as const, fieldNameForEndDate$ = 'endDate' as const, allowNull$ = true, strict$ = false) {
     if (!allowNull$ && !isset(event1[fieldNameForStartDate$], event1[fieldNameForEndDate$], event2[fieldNameForStartDate$], event2[fieldNameForEndDate$])) return false
 
     if (strict$)
@@ -196,9 +198,9 @@ type DateAllFormat = DateObjectFormat | DateStringFormats
 type DateStringFormats = 'dateInt8' | 'dateInt12' | 'humanReadableTimestamp'
 type DateObjectFormat = 'date'
 
-export function nextWeekDay(fromDate, weekDayInt?: 0 | 1 | 2 | 3 | 4 | 5 | 6, outputFormat?: DateStringFormats, sameDayAllowed?: boolean): number
-export function nextWeekDay(fromDate, weekDayInt?: 0 | 1 | 2 | 3 | 4 | 5 | 6, outputFormat?: DateObjectFormat, sameDayAllowed?: boolean): Date
-export function nextWeekDay(fromDate, weekDayInt?: 0 | 1 | 2 | 3 | 4 | 5 | 6, outputFormat = 'date', sameDayAllowed = false): any {
+export function nextWeekDay(fromDate: any, weekDayInt?: 0 | 1 | 2 | 3 | 4 | 5 | 6, outputFormat?: DateStringFormats, sameDayAllowed?: boolean): number
+export function nextWeekDay(fromDate: any, weekDayInt?: 0 | 1 | 2 | 3 | 4 | 5 | 6, outputFormat?: DateObjectFormat, sameDayAllowed?: boolean): Date
+export function nextWeekDay(fromDate: any, weekDayInt?: 0 | 1 | 2 | 3 | 4 | 5 | 6, outputFormat = 'date', sameDayAllowed = false): any {
     const date = getDateAsObject(fromDate)
     if (typeof weekDayInt === 'undefined') weekDayInt = (date.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6)
     const toAdd = !sameDayAllowed && date.getDay() === weekDayInt ? 7 : 0
@@ -301,29 +303,29 @@ export function firstDayOfMonth(dateAllFormat: Date | string | number = getDateA
     return getDateAs(firstDay, outputFormat as any)
 }
 
-export function differenceInMilliseconds(startDateAllFormat, endDateAllFormat) {
+export function differenceInMilliseconds(startDateAllFormat: any, endDateAllFormat: any) {
     const startDate = getDateAsObject(startDateAllFormat)
     const endDate = getDateAsObject(endDateAllFormat)
     return endDate.getTime() - startDate.getTime()
 }
 
-export function differenceInSeconds(startDateAllFormat, endDateAllFormat) {
+export function differenceInSeconds(startDateAllFormat: any, endDateAllFormat: any) {
     return differenceInMilliseconds(startDateAllFormat, endDateAllFormat) / 1000
 }
 
-export function differenceInMinutes(startDateAllFormat, endDateAllFormat) {
+export function differenceInMinutes(startDateAllFormat: any, endDateAllFormat: any) {
     return differenceInSeconds(startDateAllFormat, endDateAllFormat) / 60
 }
 
-export function differenceInHours(startDateAllFormat, endDateAllFormat) {
+export function differenceInHours(startDateAllFormat: any, endDateAllFormat: any) {
     return differenceInMinutes(startDateAllFormat, endDateAllFormat) / 60
 }
 
-export function differenceInDays(startDateAllFormat, endDateAllFormat) {
+export function differenceInDays(startDateAllFormat: any, endDateAllFormat: any) {
     return differenceInHours(startDateAllFormat, endDateAllFormat) / 24
 }
 
-export function differenceInWeeks(startDateAllFormat, endDateAllFormat) {
+export function differenceInWeeks(startDateAllFormat: any, endDateAllFormat: any) {
     return differenceInDays(startDateAllFormat, endDateAllFormat) / 7
 }
 
@@ -347,7 +349,7 @@ export function getDateAs(dateAllFormat: Date | string | number = new Date(), ou
 }
 
 
-export function isDateIntOrStringValid(dateStringOrInt, outputAnError = false, length?): boolean {
+export function isDateIntOrStringValid(dateStringOrInt: string | number, outputAnError = false, length?: number): boolean {
     if (!isset(dateStringOrInt)) return false
     const dateStr = dateStringOrInt.toString()
 
@@ -368,7 +370,7 @@ export function isDateIntOrStringValid(dateStringOrInt, outputAnError = false, l
     return true
 }
 
-export function isDateIsoOrObjectValid(dateIsoOrObj, outputAnError = false) {
+export function isDateIsoOrObjectValid(dateIsoOrObj: any, outputAnError = false) {
     let dateObj: Date | number | string = dateIsoOrObj
     if (typeof dateIsoOrObj === 'string') dateObj = new Date(dateIsoOrObj)
     const valid = dateObj instanceof Date

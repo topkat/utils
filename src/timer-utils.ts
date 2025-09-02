@@ -7,9 +7,9 @@ import { DescriptiveError } from './error-utils'
 import { round2 } from './math-utils'
 
 
-export async function timeout(ms, fn = () => { /* */ }) { return new Promise(res => setTimeout(res, ms)).then(fn) }
+export async function timeout(ms: number, fn = () => { /* */ }) { return new Promise(res => setTimeout(res, ms)).then(fn) }
 
-export async function runAsync(callback, milliseconds$ = 1) { return timeout(milliseconds$, callback) }
+export async function runAsync(callback: () => any, milliseconds$ = 1) { return timeout(milliseconds$, callback) }
 
 /**
  *
@@ -18,7 +18,7 @@ export async function runAsync(callback, milliseconds$ = 1) { return timeout(mil
  * @param {Boolean|String} errorAfterNSeconds default:true output an error in case of timeout, can be the displayed error message
  * @param {*} cliOutput write a cli progress to show that a process is running
  */
-export async function waitUntilTrue(callback, timeoutSec = 10, errorAfterNSeconds = true, cliOutput = true) {
+export async function waitUntilTrue(callback: () => any, timeoutSec = 10, errorAfterNSeconds = true, cliOutput = true) {
     let generalTimeout = true
     let step = 3
     const errMess = typeof errorAfterNSeconds === 'string' ? 'Timeout: ' + errorAfterNSeconds : 'Timeout for waitUntilTrue() callback'
@@ -42,7 +42,7 @@ let isExecuting = false
  * @param {Number} time default: 500ms;
  * @param {Function} errorCallback default: e => C.error(e)
  */
-export async function executeInDelayedLoop(callback, time = 500, errorCallback = e => C.error(e)) {
+export async function executeInDelayedLoop(callback: () => any, time = 500, errorCallback = (e: any) => C.error(e)) {
     delayedLoopParams.push([callback, time, errorCallback])
     if (isExecuting) return
     isExecuting = true

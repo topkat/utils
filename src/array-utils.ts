@@ -23,10 +23,10 @@ export function shuffleArray<EntryArray extends any[]>(array: EntryArray): Entry
  * @return obj[addr] eventually processed by the callback
  */
 export function ensureIsArrayAndPush(obj: object, addr: string, valToPush: any, onlyUniqueValues?: Function) {
-    return ensureObjectProp(obj, addr, [], objValue => {
+    return ensureObjectProp(obj, addr, [], (objValue: any) => {
         if (isset(onlyUniqueValues)) {
             let duplicateFound = false
-            if (typeof onlyUniqueValues === 'function') duplicateFound = objValue.some(a => onlyUniqueValues(a, valToPush))
+            if (typeof onlyUniqueValues === 'function') duplicateFound = objValue.some((a: any) => onlyUniqueValues(a, valToPush))
             else duplicateFound = objValue.includes(valToPush)
             if (!duplicateFound) objValue.push(valToPush)
         } else objValue.push(valToPush)
@@ -102,7 +102,7 @@ export function pushIfNotExist<T>(arrayToPushInto: T[], valueOrArrayOfValuesToBe
     return arrayToPushInto
 }
 
-export function isNotEmptyArray(arr): boolean {
+export function isNotEmptyArray(arr: any[]): boolean {
     return Array.isArray(arr) && !!arr.length
 }
 

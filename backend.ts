@@ -46,7 +46,7 @@ export async function execWaitForOutput(
                 clearTimeout(to)
                 res(outputStream)
             }
-            const stdCallback = data => {
+            const stdCallback = (data: any) => {
                 if (logOutputStream) C.log(data)
                 streamConsoleOutput(data)
                 outputStream += data
@@ -55,7 +55,7 @@ export async function execWaitForOutput(
                     if (regexp.test(data)) resolve()
                 }
             }
-            const exitCallback = exitCode => {
+            const exitCallback = (exitCode: any) => {
                 if (exitCode === 0) resolve()
                 else if (stringOrRegexpToSearchForConsideringDone || typeof exitCode === 'number' && exitCode !== 0) reject(exitCode)
                 else resolve()

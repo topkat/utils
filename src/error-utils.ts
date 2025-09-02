@@ -12,15 +12,15 @@ import { removeCircularJSONstringify } from './remove-circular-json-stringify'
 import { generateToken } from './string-utils'
 import { isObject } from './is-object'
 
-export function errIfNotSet(objOfVarNamesWithValues) { return errXXXIfNotSet(422, false, objOfVarNamesWithValues) }
+export function errIfNotSet(objOfVarNamesWithValues: Record<string, any>) { return errXXXIfNotSet(422, false, objOfVarNamesWithValues) }
 
-export function err500IfNotSet(objOfVarNamesWithValues) { return errXXXIfNotSet(500, false, objOfVarNamesWithValues) }
+export function err500IfNotSet(objOfVarNamesWithValues: Record<string, any>) { return errXXXIfNotSet(500, false, objOfVarNamesWithValues) }
 
-export function errIfEmptyOrNotSet(objOfVarNamesWithValues) { return errXXXIfNotSet(422, true, objOfVarNamesWithValues) }
+export function errIfEmptyOrNotSet(objOfVarNamesWithValues: Record<string, any>) { return errXXXIfNotSet(422, true, objOfVarNamesWithValues) }
 
-export function err500IfEmptyOrNotSet(objOfVarNamesWithValues) { return errXXXIfNotSet(500, true, objOfVarNamesWithValues) }
+export function err500IfEmptyOrNotSet(objOfVarNamesWithValues: Record<string, any>) { return errXXXIfNotSet(500, true, objOfVarNamesWithValues) }
 
-export function errXXXIfNotSet(errCode, checkEmpty, objOfVarNamesWithValues) {
+export function errXXXIfNotSet(errCode: number, checkEmpty: boolean, objOfVarNamesWithValues: Record<string, any>) {
     const missingVars: string[] = []
     for (const prop in objOfVarNamesWithValues) {
         if (!isset(objOfVarNamesWithValues[prop]) || (checkEmpty && isEmpty(objOfVarNamesWithValues[prop]))) missingVars.push(prop)
@@ -29,7 +29,7 @@ export function errXXXIfNotSet(errCode, checkEmpty, objOfVarNamesWithValues) {
 }
 
 
-export function err422IfNotSet(o) {
+export function err422IfNotSet(o: Record<string, any>) {
     const m: any[] = []
     for (const p in o) if (!isset(o[p])) m.push(p)
     if (m.length) throw new DescriptiveError(`requiredVariableEmptyOrNotSet`, { code: 422, origin: 'Validator', varNames: m.join(', ') })
@@ -48,7 +48,7 @@ export function tryCatch<T>(callback: () => T, onErr: Function = () => { /** */ 
 
 export const failSafe = tryCatch // ALIAS
 
-function extraInfosRendererDefault(extraInfos) {
+function extraInfosRendererDefault(extraInfos: Record<string, any>) {
     return [
         '== EXTRA INFOS ==',
         removeCircularJSONstringify({ ...extraInfos, message: undefined, stack: undefined, originalError: undefined, hasBeenLogged: undefined, logs: undefined }, 2)
@@ -224,6 +224,6 @@ export class DescriptiveError<ExpectedOriginalError = any> extends Error {
     }
 }
 
-function computeErrorMessage(err) {
+function computeErrorMessage(err: any) {
     return (err.code ? err.code + ' ' : '') + (err.msg || err.message)
 }

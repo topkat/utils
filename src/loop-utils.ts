@@ -31,7 +31,7 @@ export function forI<T extends any[] | any>(
         /** Current iteration index (0-based) */
         number: number,
         /** Result from previous iteration */
-        previousValue,
+        previousValue: any,
         /** Array of all previous results */
         arrayOfPreviousValues: any[]
     ) => T
@@ -58,7 +58,7 @@ export function forI<T extends any[] | any>(
  * ```
  * // Returns: [1, 1, 2, 3, 5, 8, 13, 21]
  */
-export async function forIasync<T extends any[] | any>(nbIterations: number, callback: (number) => T): Promise<T[]> {
+export async function forIasync<T extends any[] | any>(nbIterations: number, callback: (number: number) => T): Promise<T[]> {
     const results: any[] = []
     for (let i = 0; i < nbIterations; i++) {
         results.push(await callback(i))
@@ -67,7 +67,7 @@ export async function forIasync<T extends any[] | any>(nbIterations: number, cal
 }
 
 
-export type RecursiveCallback = (item: any, addr: string, lastElementKey: string | number, parent: ObjectGeneric | any[]) => false | any
+export type RecursiveCallback = (item: any, addr: string, lastElementKey: string | number, parent?: ObjectGeneric | any[]) => false | any
 export type RecursiveConfig = {
     disableCircularDependencyRemoval?: boolean
     isObjectTestFunction?: (item: any) => boolean
@@ -98,7 +98,7 @@ export async function recursiveGenericFunction(
     addr$ = '',
     /** Technical field */
     lastElementKey: string | number = '',
-    parent?,
+    parent?: Record<string, any>,
     techFieldToAvoidCircularDependency: any[] = []
 ) {
     err500IfNotSet({ callback })
@@ -141,7 +141,7 @@ export async function recursiveGenericFunction(
  * NOTE: will remove circular references
  * /!\ check return values
  */
-export function recursiveGenericFunctionSync(item: ObjectGeneric | any[], callback: RecursiveCallback, config: RecursiveConfig = {}, addr$ = '', lastElementKey: string | number = '', parent?, techFieldToAvoidCircularDependency: any[] = []) {
+export function recursiveGenericFunctionSync(item: ObjectGeneric | any[], callback: RecursiveCallback, config: RecursiveConfig = {}, addr$ = '', lastElementKey: string | number = '', parent?: Record<string, any>, techFieldToAvoidCircularDependency: any[] = []) {
     err500IfNotSet({ callback })
 
     if (!config.isObjectTestFunction) config.isObjectTestFunction = isObject

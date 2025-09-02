@@ -5,8 +5,8 @@ import { isset } from './isset'
 import { C } from './logger-utils'
 import { timeout } from './timer-utils'
 
-const transactionRunning = { __default: false }
-const queue = { __default: [] }
+const transactionRunning = { __default: false } as Record<string, boolean>
+const queue = { __default: [] } as Record<string, any[]>
 
 /** Allow to perform async functions in a defined order
  * This adds the callback to a queue and is resolved when ALL previous callbacks with same name are executed
@@ -16,7 +16,7 @@ const queue = { __default: [] }
  * @param {Number} timeout default: 120000 (120s) will throw an error if transaction time is higher that this amount of ms
  * @returns {Promise}
  */
-export async function transaction(name, asyncCallback, timeout = 120000, doNotThrow = false) {
+export async function transaction(name: string, asyncCallback: () => any, timeout = 120000, doNotThrow = false) {
     if (typeof name === 'function') {
         asyncCallback = name
         name = '__default'
@@ -45,7 +45,7 @@ export async function transaction(name, asyncCallback, timeout = 120000, doNotTh
     })
 }
 
-export async function removeItemFromQueue(name) {//        meoww!
+export async function removeItemFromQueue(name: string) {//        meoww!
     if (transactionRunning[name] === true) return //       v
     transactionRunning[name] = true //                A  A       /\
     while (queue[name].length) await queue[name].shift()() //    ||
@@ -54,7 +54,7 @@ export async function removeItemFromQueue(name) {//        meoww!
 //                                                        11    11
 
 /** Wait for a transaction to complete without creating a new transaction */
-export async function waitForTransaction(transactionName, forceReleaseInSeconds = 30) {
+export async function waitForTransaction(transactionName: string, forceReleaseInSeconds = 30) {
     let brk = false
     setTimeout(() => brk = true, forceReleaseInSeconds * 1000)
     while (isset(transactionRunning[transactionName]) && transactionRunning[transactionName] === true) {

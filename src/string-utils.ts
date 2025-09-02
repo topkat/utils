@@ -76,7 +76,7 @@ export function getValuesBetweenSeparator(str: string, separator: string, remove
  * @param ignoreBetweenOpen default ['\'', '`', '"', '/'], when reaching an opening char, it will ignore all until it find the corresponding closing char
  * @param ignoreBetweenClose default ['\'', '`', '"', '/'] list of corresponding closing chars
  */
-export function getValuesBetweenStrings(str: string, openingOrSeparator, closing, ignoreBetweenOpen = ['\'', '`', '"', '/'], ignoreBetweenClose = ['\'', '`', '"', '/'], removeTrailingSpaces = true) {
+export function getValuesBetweenStrings(str: string, openingOrSeparator: string, closing?: string, ignoreBetweenOpen = ['\'', '`', '"', '/'], ignoreBetweenClose = ['\'', '`', '"', '/'], removeTrailingSpaces = true) {
     err500IfEmptyOrNotSet({ openingOrSeparator, str })
 
     str = str.replace(/<</g, '§§"').replace(/>>/g, '"§§')
@@ -129,7 +129,7 @@ export function getValuesBetweenStrings(str: string, openingOrSeparator, closing
 
     pushActualValue()
 
-    const replaceValz = arr => arr.map(v => v.replace(/§§"/g, '<<').replace(/"§§/g, '>>')).filter(v => v)
+    const replaceValz = (arr: string[]) => arr.map(v => v.replace(/§§"/g, '<<').replace(/"§§/g, '>>')).filter(v => v)
 
     return { inner: replaceValz(arrayValues), outer: replaceValz(betweenArray) }
 }
@@ -240,7 +240,7 @@ export function miniTemplater(content: string, varz: ObjectGeneric, options: Par
 
 
 /** Clean output for outside world. All undefined / null / NaN / Infinity values are changed to '-' */
-export function cln(val, replacerInCaseItIsUndefinNaN = '-') { return ['undefined', undefined, 'indéfini', 'NaN', NaN, Infinity, null].includes(val) ? replacerInCaseItIsUndefinNaN : val }
+export function cln(val: any, replacerInCaseItIsUndefinNaN = '-') { return ['undefined', undefined, 'indéfini', 'NaN', NaN, Infinity, null].includes(val) ? replacerInCaseItIsUndefinNaN : val }
 
 export function nbOccurenceInString(baseString: string, searchedString: string, allowOverlapping: boolean = false) {
 

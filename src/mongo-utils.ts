@@ -17,7 +17,7 @@ export function getId(obj: any): string | undefined {
  * @param {Object} filterB
  * @param {Boolean} assignToFilterA defualt false: if true, it will modify filterA, else it will return merged filters as a new object
  */
-export function mongoFilterMerger(filterA, filterB, assignToFilterA = false) {
+export function mongoFilterMerger(filterA: any, filterB: any, assignToFilterA = false) {
     if (isset(filterA.$and) && isset(filterB.$and)) {
         filterA.$and.push(...filterB.$and)
         delete filterB.$and

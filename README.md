@@ -228,7 +228,6 @@ urlPathJoin('https://api.example.com//v1', '/users/', 'userId') // => 'https://a
 - `ENV`: shortcut to `process.env`. Parse boolean and number values
 - `parseBool(value)`: Parse boolean values
 
-
 ### Async Operations
 - `timeout(ms)`: Promise-based timeout
 
@@ -244,6 +243,7 @@ urlPathJoin('https://api.example.com//v1', '/users/', 'userId') // => 'https://a
 - `objEntries(obj)`: In JS object entries are not correctly typed (`Object.entries({ a: 1, b: true }) // type: [string, number | boolean]`). With this function we are typed like `objEntries({ a: 1, b: true }) // ["a", number] | ["b", boolean]`
 - `objKeys`: In JS object keys are not correctly typed (`Object.keys({ a: 1, b: 2 }) // type: string`). With this function we are typed like `objKeys({ a: 1, b: 2 }) // type: 'a' | 'b'`
 - `includes(array, item)`: Fix this always happening ts error when using includes and your search string is not typed as an array element (which is very dumb IMO)
+
 
 ## Configuration
 

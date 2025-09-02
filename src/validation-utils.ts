@@ -11,17 +11,17 @@ import { removeCircularJSONstringify } from './remove-circular-json-stringify'
 
 export type BaseTypes = 'objectId' | 'dateInt6' | 'dateInt' | 'dateInt8' | 'dateInt12' | 'time' | 'humanReadableTimestamp' | 'date' | 'dateObject' | 'array' | 'object' | 'buffer' | 'string' | 'function' | 'boolean' | 'number' | 'bigint' | 'year' | 'email' | 'any'
 
-export function issetOr(...elms) { return elms.some(elm => typeof elm !== 'undefined' && elm !== null) }
+export function issetOr(...elms: any[]) { return elms.some(elm => typeof elm !== 'undefined' && elm !== null) }
 
-export function isEmptyOrNotSet(...elms) { return elms.some(elm => !isset(elm) || isEmpty(elm)) }
+export function isEmptyOrNotSet(...elms: any[]) { return elms.some(elm => !isset(elm) || isEmpty(elm)) }
 
-export function isDateObject(variable) { return variable instanceof Date }
+export function isDateObject(variable: any[]) { return variable instanceof Date }
 
 /** Check all values are set */
-export function checkAllObjectValuesAreEmpty(o) { return Object.values(o).every(value => !isset(value)) }
+export function checkAllObjectValuesAreEmpty(o: Record<string, any>) { return Object.values(o).every(value => !isset(value)) }
 
 /** Throw an error in case data passed is not a valid ctx */
-export function checkCtxIntegrity(ctx) {
+export function checkCtxIntegrity(ctx: Record<string, any>) {
     if (!isset(ctx) || !isset(ctx.user)) throw new DescriptiveError('ctxNotSet', { code: 500 })
 }
 
@@ -102,7 +102,7 @@ export function isValid(...paramsToValidate: ValidatorObject[]) {
     return errArray.length ? false : true
 }
 
-function parseValueForDisplay(value?) {
+function parseValueForDisplay(value?: any) {
     try {
         if (value === undefined) return 'undefined'
         else if (value?.data?.data) return { ...value, data: 'Buffer' }
@@ -115,7 +115,7 @@ function parseValueForDisplay(value?) {
 /** Default types + custom types
  * 'objectId','dateInt6','dateInt','dateInt8','dateInt12','time','humanReadableTimestamp','date','array','object','buffer','string','function','boolean','number','bigint',
  */
-export function isType(value, type: BaseTypes) { return isValid({ name: 'Is type check', value, type, emptyAllowed: true }) }
+export function isType(value: any, type: BaseTypes) { return isValid({ name: 'Is type check', value, type, emptyAllowed: true }) }
 
 export function validatorReturnErrArray(...paramsToValidate: ValidatorObject[]): [string?, object?] {
     const paramsFormatted: ValidatorObject[] = []
@@ -127,7 +127,7 @@ export function validatorReturnErrArray(...paramsToValidate: ValidatorObject[]):
 
         // parse => name: {myVar1: 'blah, myvar2: myvar2}
         if (typeof param.name === 'object' && !Array.isArray(param.name))
-            Object.keys(param.name).forEach(name => paramsFormatted.push(Object.assign({}, param, { name: name, value: param?.name?.[name] })))
+            Object.keys(param.name).forEach(name => paramsFormatted.push(Object.assign({}, param, { name: name, value: param?.name?.[name as any] })))
         else paramsFormatted.push(param)
     })
 
@@ -138,7 +138,7 @@ export function validatorReturnErrArray(...paramsToValidate: ValidatorObject[]):
         let optional = paramObj.optional || false
         const emptyAllowed = optional || paramObj.emptyAllowed || false
         if (paramObj.isset === false) paramObj.mustNotBeSet = true // ALIAS
-        const errMess = (msg, extraInfos = {}, errCode = 422): [string, object] => [msg, { code: errCode, origin: 'Generic validator', varName: name, varType: typeof value, gotValue: parseValueForDisplay(value), ...extraInfos }]
+        const errMess = (msg: string, extraInfos = {}, errCode = 422): [string, object] => [msg, { code: errCode, origin: 'Generic validator', varName: name, varType: typeof value, gotValue: parseValueForDisplay(value), ...extraInfos }]
 
         // accept syntax { 'myVar.var2': myVar.var2, ... }
         if (typeof name !== 'undefined' && !hasValue) {
@@ -167,7 +167,7 @@ export function validatorReturnErrArray(...paramsToValidate: ValidatorObject[]):
             const areSomeTypeValid = types.some(type => {
                 if (type.endsWith('[]')) {
                     if (!Array.isArray(value)) errMess('wrongTypeForVar', { expectedType: 'array', gotType: typeof value })
-                    type = type.replace('[]', '')
+                    type = type.replace('[]', '') as typeof type
                 }
 
                 const allTypes: Array<BaseTypes> = [
@@ -197,26 +197,28 @@ export function validatorReturnErrArray(...paramsToValidate: ValidatorObject[]):
                 if (!allTypes.includes(type)) throw new DescriptiveError('typeDoNotExist', { code: 500, type })
 
                 const basicTypeCheck = {
-                    objectId: val => /^[0-9a-fA-F-]{24,}$/.test(val), // "0c65940b-6b0c-4dd8-9c7a-7c5fe1ba907a"
-                    dateInt6: val => isDateIntOrStringValid(parseInt(val + '01'), true, 8),
-                    dateInt: val => isDateIntOrStringValid(val, true, 8),
-                    dateInt8: val => isDateIntOrStringValid(val, true, 8),
-                    dateInt12: val => isDateIntOrStringValid(val, true, 12),
-                    time: val => /^\d\d:\d\d$/.test(val) && isTimeStringValid(val),
-                    humanReadableTimestamp: val => (val + '').length === 17,
-                    date: val => isDateIsoOrObjectValid(val, true),
-                    dateObject: val => isDateIsoOrObjectValid(val, true),
-                    array: val => Array.isArray(val),
-                    object: val => !Array.isArray(val) && val !== null && typeof val === type,
-                    buffer: val => Buffer.isBuffer(val),
-                    year: val => /^\d\d\d\d$/.test(val),
-                    email: val => /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]+$/.test(val),
+                    objectId: (val: any) => /^[0-9a-fA-F-]{24,}$/.test(val), // "0c65940b-6b0c-4dd8-9c7a-7c5fe1ba907a"
+                    dateInt6: (val: any) => isDateIntOrStringValid(parseInt(val + '01'), true, 8),
+                    dateInt: (val: any) => isDateIntOrStringValid(val, true, 8),
+                    dateInt8: (val: any) => isDateIntOrStringValid(val, true, 8),
+                    dateInt12: (val: any) => isDateIntOrStringValid(val, true, 12),
+                    time: (val: any) => /^\d\d:\d\d$/.test(val) && isTimeStringValid(val),
+                    humanReadableTimestamp: (val: any) => (val + '').length === 17,
+                    date: (val: any) => isDateIsoOrObjectValid(val, true),
+                    dateObject: (val: any) => isDateIsoOrObjectValid(val, true),
+                    array: (val: any) => Array.isArray(val),
+                    object: (val: any) => !Array.isArray(val) && val !== null && typeof val === type,
+                    buffer: (val: any) => Buffer.isBuffer(val),
+                    year: (val: any) => /^\d\d\d\d$/.test(val),
+                    email: (val: any) => /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]+$/.test(val),
                     any: () => true,
                 }
 
-                return typeof basicTypeCheck?.[type] !== 'undefined' && basicTypeCheck?.[type](value) ||
+                const typeTyped = type as keyof typeof basicTypeCheck
+
+                return typeof basicTypeCheck?.[typeTyped] !== 'undefined' && basicTypeCheck?.[typeTyped](value) ||
                     typeof value === type && type !== 'object' || // for string, number, boolean...
-                    typeof configFn()?.customTypes?.[type] !== 'undefined' && configFn()?.customTypes?.[type]?.test(value)
+                    typeof (configFn()?.customTypes as any)?.[typeTyped as any] !== 'undefined' && (configFn()?.customTypes as any)?.[typeTyped as any]?.test(value)
             })
             if (!areSomeTypeValid) return errMess(`wrongTypeForVar`, { expectedTypes: types.join(', '), gotType: Object.prototype.toString.call(value), gotValue: parseValueForDisplay(value) })
         }

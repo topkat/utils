@@ -29,7 +29,7 @@ export const logger = {
      */
     toHtml(inputLogs = [...logger.raw]) {
         if (!Array.isArray(inputLogs)) inputLogs = [inputLogs]
-        const code2css = {
+        const code2css: Record<string, any> = {
             2: `opacity:.5`, // dim
             32: `color:#679933`, // green
             31: `color:#A8383B`, // red
@@ -70,23 +70,23 @@ export const logger = {
 // * or C.gradientize(myLongString)
 */
 export const C = {
-    dim: str => C.output(2, str), // opacity 0.5
-    green: str => C.output(32, str),
-    red: str => C.output(31, str),
-    yellow: str => C.output(33, str),
-    grey: str => C.output(2, str),
-    magenta: str => C.output(35, str),
-    cyan: str => C.output(36, str),
-    blue: str => C.output(34, str),
-    primary: str => {
+    dim: (str: string) => C.output(2, str), // opacity 0.5
+    green: (str: string) => C.output(32, str),
+    red: (str: string) => C.output(31, str),
+    yellow: (str: string) => C.output(33, str),
+    grey: (str: string) => C.output(2, str),
+    magenta: (str: string) => C.output(35, str),
+    cyan: (str: string) => C.output(36, str),
+    blue: (str: string) => C.output(34, str),
+    primary: (str: string) => {
         const primary: Color = configFn()?.terminal?.theme?.primary
         return C.rgb(...primary) + str + C.reset
     },
     reset: '\x1b[0m',
-    output: (code, str = '') => configFn()?.terminal?.noColor ? str : `\x1b[${code}m${str}\x1b[0m`,
+    output: (code: number, str = '') => configFn()?.terminal?.noColor ? str : `\x1b[${code}m${str}\x1b[0m`,
     // true RGB colors B-*
-    rgb: (r, g = 0, b = 0) => configFn()?.terminal?.noColor || !isset(r, g, b) ? '' : `\x1b[38;2;${r};${g};${b}m`,
-    bg: (r?, g?, b?) => configFn()?.terminal?.noColor || !isset(r, g, b) ? '' : `${'\x1b['}48;2;${r};${g};${b}m`,
+    rgb: (r: number, g = 0, b = 0) => configFn()?.terminal?.noColor || !isset(r, g, b) ? '' : `\x1b[38;2;${r};${g};${b}m`,
+    bg: (r?: number, g?: number, b?: number) => configFn()?.terminal?.noColor || !isset(r, g, b) ? '' : `${'\x1b['}48;2;${r};${g};${b}m`,
     /** Output a line of title */
     line(title = '', length = configFn()?.terminal?.theme?.pageWidth, clr = configFn()?.terminal?.theme?.primary, char = '=') {
         this.log('\u00A0\n' + this.rgb(...clr) + (title + ' ').padEnd(length || 0, char) + this.reset + '\u00A0\n')
@@ -94,7 +94,7 @@ export const C = {
     /** Eg: ['cell1', 'cell2', 'cell3'], [25, 15] will start cell2 at 25 and cell 3 at 25 + 15
      * @param {Array} limits default divide the viewport
      */
-    cols(strings, limits: number[] = [], clr = configFn()?.terminal?.theme?.fontColor) {
+    cols(strings: string[], limits: number[] = [], clr = configFn()?.terminal?.theme?.fontColor) {
 
         if (!limits.length) {
             const colWidth = Math.round(configFn()?.terminal?.theme.pageWidth / strings.length)
@@ -109,58 +109,40 @@ export const C = {
         this.logClr(str, clr)
     },
     /** Console log alias */
-    log(...stringsCtxMayBeFirstParam) {
-        stringsCtxMayBeFirstParam.forEach(str => this.logClr(str))
+    log(...stringsCtxMayBeFirstParam: any[]) {
+        stringsCtxMayBeFirstParam.forEach((str: string) => this.logClr(str))
     },
-    logClr(str, clr = configFn()?.terminal?.theme?.fontColor) {
+    logClr(str: string, clr = configFn()?.terminal?.theme?.fontColor) {
         if (!isset(str)) return
         str = (typeof clr !== 'undefined' ? this.rgb(...clr) : '') + str.toString().replace(/\n/g, '\n' + (typeof clr !== 'undefined' ? this.rgb(...clr) : ''))
         logger.log(str + this.reset, 'info')
     },
-    info(...str) {
+    info(...str: string[]) {
         str.forEach((s, i) => {
             if (i === 0) this.logClr('ⓘ  ' + s, configFn()?.terminal?.theme?.primary)
             else this.log(this.dimStrSplit(s))
         })
         this.log(' ')
     },
-    success(...str) {
+    success(...str: string[]) {
         str.forEach((s, i) => {
             if (i === 0) this.log(this.green('✓  ' + s))
             else this.log(this.dimStrSplit(s))
         })
     },
     /** First param **false** to avoid logging stack trace */
-    error: (...errors) => logErrPrivate('error', [255, 0, 0], ...errors),
+    error: (...errors: any[]) => logErrPrivate('error', [255, 0, 0], ...errors),
     /** First param **false** to avoid logging stack trace */
-    warning: (...str) => logErrPrivate('warn', [255, 122, 0], ...str),
-    customError: (color, ...str) => logErrPrivate('error', color, ...str),
-    customWarning: (color, ...str) => logErrPrivate('warn', color, ...str),
-    applicationError: (color, ...str) => logErrPrivate('warn', color, ...str),
-    warningLight: (_, ...str) => logErrPrivate('warn', [196, 120, 52], ...str),
-    dimStrSplit(...logs) {
+    warning: (...str: string[]) => logErrPrivate('warn', [255, 122, 0], ...str),
+    customError: (color: Color, ...str: string[]) => logErrPrivate('error', color, ...str),
+    customWarning: (color: Color, ...str: string[]) => logErrPrivate('warn', color, ...str),
+    applicationError: (color: Color, ...str: string[]) => logErrPrivate('warn', color, ...str),
+    warningLight: (_: any, ...str: string[]) => logErrPrivate('warn', [196, 120, 52], ...str),
+    dimStrSplit(...logs: string[]) {
         const logsStr: string[] = []
         logs.filter(isset).forEach(log => log.toString().split('\n').forEach(line => line && logsStr.push(this.dim(`    ${line}`))))
         return logsStr.join('\n')
     },
-    notifShow() {
-        console.log('\n\u00A0')
-        this.notifications.forEach(fn => fn())
-        this.notifications = []
-        console.log('\n\u00A0')
-    },
-    /** Keep in memory the logs to show when needed with C.notifShow()
-     * Ex: C.notification('info', str); */
-    notification(type, ...messages) {
-        this.notifications.push(() => {
-            if (isset(this[type])) {
-                this[type](...messages)
-            } else {
-                this.warning('Wrong param for C.notification')
-            }
-        })
-    },
-    notifications: [] as any[], // fn array
     /** Gratientize lines of text (separated by \n) */
     gradientize(str = '', rgb1 = configFn()?.terminal?.theme?.shade1, rgb2 = configFn()?.terminal?.theme?.shade2, bgRgb = configFn()?.terminal?.theme?.bgColor, paddingY = 2) {
 
@@ -177,7 +159,7 @@ export const C = {
             }, '') +
             padLine.repeat(paddingY))
     },
-    debugModeLog(title, ...string) {
+    debugModeLog(title: string, ...string: string[]) {
         this.logClr('🐞 ' + title, configFn()?.terminal?.theme?.debugModeColor)
         this.log(this.dimStrSplit(...string))
     },
@@ -191,7 +173,7 @@ export const C = {
     }
 }
 
-function logErrPrivate(level: NotInfoLogLevel, color: Color, ...errors) {
+function logErrPrivate(level: NotInfoLogLevel, color: Color, ...errors: any[]) {
     const { isProd } = configFn()
 
     if (errors.length === 1 && typeof errors[0]?.log === 'function') return errors[0].log()
@@ -201,7 +183,7 @@ function logErrPrivate(level: NotInfoLogLevel, color: Color, ...errors) {
     const symbol = level === 'error' ? '✘ ' : '⚠ '
     if (errors.length > 1 && !isset(errors[0])) errors.shift() // remove first empty object
 
-    const getStringFromErr = (err, i) => {
+    const getStringFromErr = (err: any, i: number) => {
         if (!isset(err)) return ''
         else if (typeof err === 'string') {
             if (i === 0) return C.rgb(...color) + symbol + err + C.reset
@@ -243,7 +225,7 @@ function logErrPrivate(level: NotInfoLogLevel, color: Color, ...errors) {
     }
 }
 
-function stringifyInstanceOfError(err, type = 'error', color: Color = [255, 0, 0], level = 0) { // level = keep track of recursions
+function stringifyInstanceOfError(err: any, type: NotInfoLogLevel = 'error', color: Color = [255, 0, 0], level = 0): { str: string, stackTrace?: string } { // level = keep track of recursions
     if (level > 5) return { str: '' }
     let str = ''
     let stackTrace
@@ -261,7 +243,7 @@ function stringifyInstanceOfError(err, type = 'error', color: Color = [255, 0, 0
     return { str, stackTrace }
 }
 
-function stringifyExtraInfos(extraInfoOriginal, type, color, level = 0) {
+function stringifyExtraInfos(extraInfoOriginal: Record<string, any>, type: NotInfoLogLevel, color: Color, level = 0) {
     let stackTrace
     const originalError = [C.dim(`ORIGINAL ERROR ${'-'.repeat(39)}\n`)]
     if (extraInfoOriginal instanceof Error) { // case where error is passed directly to extraInfos
@@ -336,7 +318,7 @@ export class cliLoadingSpinner {
         this.animFrames = anims[type].frames
         this.activeProcess = activeProcess
     }
-    start(msg) {
+    start(msg: string) {
         this.frameNb = 0
         this.progressMessage = msg
         this.interval = setInterval(() => {
