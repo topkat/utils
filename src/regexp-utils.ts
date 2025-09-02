@@ -33,10 +33,10 @@ export function firstMatch(str: string, regExp: RegExp): string | undefined { re
  * Eg: [ [full, match1, m2], [f, m1, m2]... ]
  * NOTE: the G flag will be appended to regexp
  */
-export function allMatches(str: string, reg: RegExp): string[] {
+export function allMatches(str: string, reg: RegExp) {
     let i = 0
-    let matches
-    const arr: string[] = []
+    let matches: RegExpExecArray | null
+    const arr: (RegExpExecArray | null)[] = []
     if (typeof str !== 'string') C.error('Not a string provided as first argument for allMatches()')
     else {
         reg = new RegExp(reg, 'g')

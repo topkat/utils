@@ -10,15 +10,17 @@ const int = parseInt
 
 export function getDateAsInt12(dateAllFormat?: Date | string | number, errIfNotValid?: any): string { return getDateAsInt(dateAllFormat, errIfNotValid, true) } // alias
 
-export function humanReadableTimestamp(dateAllFormat: any): number {
+export function humanReadableTimestamp(dateAllFormat: DateAllFormat): number {
     if (isset(dateAllFormat)) dateAllFormat = getDateAsObject(dateAllFormat)
-    return parseInt(getDateAsInt12(dateAllFormat) + pad((dateAllFormat || new Date()).getUTCSeconds()) + pad((dateAllFormat || new Date()).getUTCMilliseconds(), 3))
+    return parseInt(getDateAsInt12(dateAllFormat) + pad(((dateAllFormat as Date) || new Date()).getUTCSeconds()) + pad(((dateAllFormat as Date) || new Date()).getUTCMilliseconds(), 3))
 }
+
+// type DateAllFormat = Date | string | number
 
 /** format for 6/8/2018 => 20180806
  * @param dateAllFormat multiple format allowed 2012, 20120101, 201201011200, new Date(), "2019-12-08T16:19:10.341Z" and all string that new Date() can parse
  */
-export function getDateAsInt(dateAllFormat: Date | string | number = new Date(), errIfNotValid$ = false, withHoursAndMinutes$ = false): string { // optional
+export function getDateAsInt(dateAllFormat: DateAllFormat = new Date(), errIfNotValid$ = false, withHoursAndMinutes$ = false): string { // optional
     let dateInt
     if (typeof dateAllFormat === 'string' && dateAllFormat.includes('/')) {
         // 01/01/2020 format
@@ -39,7 +41,7 @@ export function getDateAsInt(dateAllFormat: Date | string | number = new Date(),
 }
 
 
-export function getMonthAsInt(dateAllFormat: Date | string | number = new Date()): number {
+export function getMonthAsInt(dateAllFormat: DateAllFormat = new Date()): number {
     let dateInt
     if (isDateIntOrStringValid(dateAllFormat)) {
         // we can pass an int or string format (20180106)
@@ -55,15 +57,15 @@ export function getMonthAsInt(dateAllFormat: Date | string | number = new Date()
 /**
  * @param dateAllFormat multiple format allowed 2012, 20120101, 201201011200, new Date(), "2019-12-08T16:19:10.341Z" and all string that new Date() can parse
  */
-export function getDateAsObject(dateAllFormat: any = new Date(), errIfNotValid$ = true): Date {
+export function getDateAsObject(dateAllFormat: DateAllFormat = new Date(), errIfNotValid$ = true): Date {
     let dateObj = dateAllFormat
     if (isDateIntOrStringValid(dateAllFormat)) {
-        const [y, M, d, h, m] = dateStringToArray(dateAllFormat)
+        const [y, M, d, h, m] = dateStringToArray(dateAllFormat as string)
         dateObj = new Date(`${y}-${M}-${d}T${h}:${m}`)
     } else if (typeof dateAllFormat === 'string') {
         dateObj = new Date(dateAllFormat)
     } else {
-        dateObj = new Date(dateAllFormat.getTime()) // clone
+        dateObj = new Date((dateAllFormat as Date).getTime()) // clone
     }
     isDateIsoOrObjectValid(dateObj, errIfNotValid$)
     return dateObj
@@ -88,7 +90,7 @@ export function dateStringToArray(strOrInt: string | number) {
 /**
  * @param dateAllFormat default: actualDate
  * @returns ['01', '01', '2019'] OR **string** if separator is provided */
-export function dateArray(dateAllFormat: Date | string | number = getDateAsInt()): [string, string, string] {
+export function dateArray(dateAllFormat: DateAllFormat = getDateAsInt()): [string, string, string] {
     const dateStr = getDateAsInt(dateAllFormat).toString()
     return [
         dateStr.substr(6, 2), // D
@@ -100,7 +102,7 @@ export function dateArray(dateAllFormat: Date | string | number = getDateAsInt()
 /**
  * @param dateAllFormat default: actualDate
  * @returns ['01', '01', '2019'] OR **string** if separator is provided */
-export function dateArrayInt(dateAllFormat: Date | string | number = getDateAsInt()): [number, number, number] {
+export function dateArrayInt(dateAllFormat: DateAllFormat = getDateAsInt()): [number, number, number] {
     const dateStr = getDateAsInt(dateAllFormat).toString()
     return [
         int(dateStr.substr(6, 2)), // D
@@ -113,7 +115,7 @@ export function dateArrayInt(dateAllFormat: Date | string | number = getDateAsIn
 /**
  * @return 01/01/2012 (alias of dateArrayFormatted(date, '/'))
  */
-export function dateFormatted(dateAllFormat: Date | string | number, separator = '/') { return dateArray(dateAllFormat).join(separator) }
+export function dateFormatted(dateAllFormat: DateAllFormat, separator = '/') { return dateArray(dateAllFormat).join(separator) }
 
 /** Date with custom offset (Ex: +2 for France) */
 export function dateOffset(offsetHours: number, dateObj = new Date()) {
@@ -175,7 +177,6 @@ export function getDuration(startDate: any, endDate: any, inMinutes = false) {
     ]
 }
 
-
 type DateEvent = { startDate: any, endDate: any }
 /** compare two object with DATE INT, if they overlap return true
  * @param {Object} event1 {startDate, endDate}
@@ -194,7 +195,8 @@ export function doDateOverlap(event1: DateEvent, event2: DateEvent, fieldNameFor
     return (!event2[fieldNameForEndDate$] || event1[fieldNameForStartDate$] <= event2[fieldNameForEndDate$]) && (!event1[fieldNameForEndDate$] || event1[fieldNameForEndDate$] >= event2[fieldNameForStartDate$])
 }
 
-type DateAllFormat = DateObjectFormat | DateStringFormats
+type DateAllFormat = Date | string | number
+type DateAllFormatString = DateObjectFormat | DateStringFormats
 type DateStringFormats = 'dateInt8' | 'dateInt12' | 'humanReadableTimestamp'
 type DateObjectFormat = 'date'
 
@@ -213,7 +215,7 @@ export function nextWeekDay(fromDate: any, weekDayInt?: 0 | 1 | 2 | 3 | 4 | 5 | 
  */
 export function addDays(dateAllFormat?: Date | string | number, numberOfDays?: number, outputFormat?: 'dateInt8' | 'dateInt12' | 'humanReadableTimestamp'): string
 export function addDays(dateAllFormat?: Date | string | number, numberOfDays?: number, outputFormat?: 'date'): Date
-export function addDays(dateAllFormat: Date | string | number = getDateAsInt(), numberOfDays = 1, outputFormat: DateAllFormat = 'date'): any {
+export function addDays(dateAllFormat: DateAllFormat = getDateAsInt(), numberOfDays = 1, outputFormat: DateAllFormatString = 'date'): any {
     const date = getDateAsObject(dateAllFormat)
     date.setTime(date.getTime() + numberOfDays * 24 * 60 * 60 * 1000)
     return getDateAs(date, outputFormat as any)
@@ -224,7 +226,7 @@ export function addDays(dateAllFormat: Date | string | number = getDateAsInt(), 
  */
 export function addMinutes(dateAllFormat?: Date | string | number, numberOfMinutes?: number, outputFormat?: DateStringFormats): string
 export function addMinutes(dateAllFormat?: Date | string | number, numberOfMinutes?: number, outputFormat?: DateObjectFormat): Date
-export function addMinutes(dateAllFormat: Date | string | number = getDateAsInt(), numberOfMinutes = 1, outputFormat: DateAllFormat = 'date'): any {
+export function addMinutes(dateAllFormat: DateAllFormat = getDateAsInt(), numberOfMinutes = 1, outputFormat: DateAllFormatString = 'date'): any {
     const date = getDateAsObject(dateAllFormat)
     date.setTime(date.getTime() + 1 * numberOfMinutes * 60 * 1000)
     return getDateAs(date, outputFormat as any)
@@ -234,7 +236,7 @@ export function addMinutes(dateAllFormat: Date | string | number = getDateAsInt(
  */
 export function addHours(dateAllFormat?: Date | string | number, numberOfHours?: number, outputFormat?: 'dateInt8' | 'dateInt12' | 'humanReadableTimestamp'): string
 export function addHours(dateAllFormat?: Date | string | number, numberOfHours?: number, outputFormat?: 'date'): Date
-export function addHours(dateAllFormat: Date | string | number = getDateAsInt(), numberOfHours = 1, outputFormat: DateAllFormat = 'date'): any {
+export function addHours(dateAllFormat: DateAllFormat = getDateAsInt(), numberOfHours = 1, outputFormat: DateAllFormatString = 'date'): any {
     const date = getDateAsObject(dateAllFormat)
     date.setTime(date.getTime() + 1 * numberOfHours * 60 * 60 * 1000)
     return getDateAs(date, outputFormat as any)
@@ -244,7 +246,7 @@ export function addHours(dateAllFormat: Date | string | number = getDateAsInt(),
  */
 export function addMonths(dateAllFormat?: Date | string | number, numberOfMonths?: number, outputFormat?: 'dateInt8' | 'dateInt12' | 'humanReadableTimestamp'): string
 export function addMonths(dateAllFormat?: Date | string | number, numberOfMonths?: number, outputFormat?: 'date'): Date
-export function addMonths(dateAllFormat: Date | string | number = getDateAsInt(), numberOfMonths = 1, outputFormat: DateAllFormat = 'date'): any {
+export function addMonths(dateAllFormat: DateAllFormat = getDateAsInt(), numberOfMonths = 1, outputFormat: DateAllFormatString = 'date'): any {
     const date = getDateAsObject(dateAllFormat)
     date.setUTCMonth(date.getUTCMonth() + numberOfMonths)
     return getDateAs(date, outputFormat as any)
@@ -252,32 +254,32 @@ export function addMonths(dateAllFormat: Date | string | number = getDateAsInt()
 /**
  * @param {String} outputFormat dateInt, dateInt8, dateInt12, date, humanReadableTimestamp, int (dateInt8)
  */
-export function addYears(dateAllFormat: Date | string | number = getDateAsInt(), numberOfYears = 1, outputFormat: DateAllFormat = 'date') {
+export function addYears(dateAllFormat: DateAllFormat = getDateAsInt(), numberOfYears = 1, outputFormat: DateAllFormatString = 'date') {
     const date = getDateAsObject(dateAllFormat)
     date.setUTCFullYear(date.getUTCFullYear() + numberOfYears)
     return getDateAs(date, outputFormat as any)
 }
 
-export function getDayOfMonth(dateAllFormat: Date | string | number = getDateAsInt()) {
+export function getDayOfMonth(dateAllFormat: DateAllFormat = getDateAsInt()) {
     const dateAsInt = getDateAsInt(dateAllFormat)
     const [, , d] = dateStringToArray(dateAsInt)
     return d
 }
 
-export function getYear(dateAllFormat: Date | string | number = getDateAsInt()) {
+export function getYear(dateAllFormat: DateAllFormat = getDateAsInt()) {
     const dateAsInt = getDateAsInt(dateAllFormat)
     const [y] = dateStringToArray(dateAsInt)
     return y
 }
 
 
-export function getHours(dateAllFormat: Date | string | number = getDateAsInt()) {
+export function getHours(dateAllFormat: DateAllFormat = getDateAsInt()) {
     const dateAsInt = getDateAsInt(dateAllFormat)
     const [, , , h] = dateStringToArray(dateAsInt)
     return h
 }
 
-export function getMinutes(dateAllFormat: Date | string | number = getDateAsInt()) {
+export function getMinutes(dateAllFormat: DateAllFormat = getDateAsInt()) {
     const dateAsInt = getDateAsInt(dateAllFormat)
     const [, , , , m] = dateStringToArray(dateAsInt)
     return m
@@ -286,7 +288,7 @@ export function getMinutes(dateAllFormat: Date | string | number = getDateAsInt(
 /**
  * @param {String} outputFormat dateInt, dateInt8, dateInt12, date, humanReadableTimestamp, int (dateInt8)
  */
-export function lastDayOfMonth(dateAllFormat: Date | string | number = getDateAsInt(), outputFormat: DateAllFormat = 'date') {
+export function lastDayOfMonth(dateAllFormat: DateAllFormat = getDateAsInt(), outputFormat: DateAllFormatString = 'date') {
     const date = getDateAsObject(dateAllFormat)
     const lastDay = new Date(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)
     lastDay.setUTCHours(date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds())
@@ -296,7 +298,7 @@ export function lastDayOfMonth(dateAllFormat: Date | string | number = getDateAs
 /**
  * @param {String} outputFormat dateInt, dateInt8, dateInt12, date, humanReadableTimestamp, int (dateInt8)
  */
-export function firstDayOfMonth(dateAllFormat: Date | string | number = getDateAsInt(), outputFormat: DateAllFormat = 'date') {
+export function firstDayOfMonth(dateAllFormat: DateAllFormat = getDateAsInt(), outputFormat: DateAllFormatString = 'date') {
     const date = getDateAsObject(dateAllFormat)
     const firstDay = new Date(date.getUTCFullYear(), date.getUTCMonth(), 1)
     firstDay.setUTCHours(date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds())
@@ -334,7 +336,7 @@ export function differenceInWeeks(startDateAllFormat: any, endDateAllFormat: any
  */
 export function getDateAs(dateAllFormat?: Date | string | number, outputFormat?: 'dateInt8' | 'dateInt12' | 'humanReadableTimestamp'): string
 export function getDateAs(dateAllFormat?: Date | string | number, outputFormat?: 'date'): Date
-export function getDateAs(dateAllFormat: Date | string | number = new Date(), outputDateFormat: DateAllFormat = 'date') {
+export function getDateAs(dateAllFormat: DateAllFormat = new Date(), outputDateFormat: DateAllFormatString = 'date') {
     switch (outputDateFormat) {
         case 'dateInt8':
             return getDateAsInt(dateAllFormat)
@@ -349,7 +351,7 @@ export function getDateAs(dateAllFormat: Date | string | number = new Date(), ou
 }
 
 
-export function isDateIntOrStringValid(dateStringOrInt: string | number, outputAnError = false, length?: number): boolean {
+export function isDateIntOrStringValid(dateStringOrInt: DateAllFormat, outputAnError = false, length?: number): boolean {
     if (!isset(dateStringOrInt)) return false
     const dateStr = dateStringOrInt.toString()
 
@@ -357,7 +359,7 @@ export function isDateIntOrStringValid(dateStringOrInt: string | number, outputA
 
     if ((typeof dateStringOrInt === 'object' && isNaN(int(dateStr))) || ![4, 6, 8, 10, 12, 17].includes(dateStr.length)) return false
 
-    const dateArr = dateStringToArray(dateStringOrInt)
+    const dateArr = dateStringToArray(dateStringOrInt as string)
     const [y, M, d, h, m] = dateArr
 
     const test1 = dateArr.length >= 3 && int(y) >= 1000 // Y

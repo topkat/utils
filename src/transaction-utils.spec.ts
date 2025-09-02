@@ -9,7 +9,7 @@ import { timeout } from './timer-utils'
 describe('TRANSACTION TEST', () => {
     const statusArr = [] as number[]
 
-    const asyncCallback = i => async () => {
+    const asyncCallback = (i: number) => async () => {
         await timeout(1000)
         statusArr.push(i)
     }

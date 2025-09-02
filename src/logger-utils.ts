@@ -27,7 +27,7 @@ export const logger = {
     /**
      * @param {String[]|String} inputLogs
      */
-    toHtml(inputLogs = [...logger.raw]) {
+    toHtml(inputLogs = [...logger.raw] as string[]) {
         if (!Array.isArray(inputLogs)) inputLogs = [inputLogs]
         const code2css: Record<string, any> = {
             2: `opacity:.5`, // dim
@@ -54,12 +54,18 @@ export const logger = {
         })
         return `<div style='color:#ccc'>${htmlLogs}<br></div>`
     },
-    toText(inputLogs = [...logger.raw]) {
+    toText(inputLogs = [...logger.raw] as string[]) {
         const str = Array.isArray(inputLogs) ? inputLogs.join('\n') : inputLogs
         return str.replace(/\x1b\[.*?m/g, '')
     },
     raw: [] as string[],
     json: [] as string[],
+} as {
+    log(str: string, level?: LogLevels): void
+    toHtml(inputLogs?: string[]): string
+    toText(inputLogs?: string[]): string
+    raw: string[]
+    json: string[]
 }
 
 /**

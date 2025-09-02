@@ -16,7 +16,7 @@ export const restTestMini = {
         restTestMini.lastErrors = []
         restTestMini.throwOnErr = throwOnErr
     },
-    newErr(err) {
+    newErr(err: any) {
         restTestMini.nbError++
         restTestMini.lastErrors.push(err)
         if (restTestMini.throwOnErr) throw new Error(err)

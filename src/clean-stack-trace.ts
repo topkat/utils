@@ -1,5 +1,5 @@
 
-export function cleanStackTrace(stack) {
+export function cleanStackTrace(stack: any) {
     if (typeof stack !== 'string') return ''
     stack.replace(/home\/[^/]+\/[^/]+\//g, '')
     const lines = stack.split('\n')
