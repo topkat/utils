@@ -28,9 +28,8 @@ export async function execWaitForOutput(
 ): Promise<string | undefined> {
 
     let outputStream = ''
-    let execOptions
 
-    const { nbSecondsBeforeKillingProcess = 20, streamConsoleOutput = () => true, errorHandle = 'throw', logOutputStream = true, stringOrRegexpToSearchForConsideringDone, keyCodeToSend = {}, onStartProcess } = config
+    const { nbSecondsBeforeKillingProcess = 20, streamConsoleOutput = () => true, errorHandle = 'throw', logOutputStream = true, stringOrRegexpToSearchForConsideringDone, keyCodeToSend = {}, onStartProcess, execOptions } = config
 
     try {
         return await new Promise((res, reject) => {
