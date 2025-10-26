@@ -58,7 +58,7 @@ export function forI<T extends any[] | any>(
  * ```
  * // Returns: [1, 1, 2, 3, 5, 8, 13, 21]
  */
-export async function forIasync<T extends any[] | any>(nbIterations: number, callback: (number: number) => T): Promise<T[]> {
+export async function forIasync<T extends Promise<any[] | any>>(nbIterations: number, callback: (number: number) => Awaited<T>): Promise<T[]> {
     const results: any[] = []
     for (let i = 0; i < nbIterations; i++) {
         results.push(await callback(i))
