@@ -137,9 +137,9 @@ export const C = {
         })
     },
     /** First param **false** to avoid logging stack trace */
-    error: (strOrFalse: false | string, ...errors: any[]) => logErrPrivate('error', [255, 0, 0], ...[strOrFalse, ...errors]),
+    error: (...errors: any[]) => logErrPrivate('error', [255, 0, 0], ...errors),
     /** First param **false** to avoid logging stack trace */
-    warning: (strOrFalse: false | string, ...str: string[]) => logErrPrivate('warn', [255, 122, 0], ...[strOrFalse, ...str]),
+    warning: (...str: any[]) => logErrPrivate('warn', [255, 122, 0], ...str),
     customError: (color: Color, ...str: string[]) => logErrPrivate('error', color, ...str),
     customWarning: (color: Color, ...str: string[]) => logErrPrivate('warn', color, ...str),
     applicationError: (color: Color, ...str: string[]) => logErrPrivate('warn', color, ...str),
