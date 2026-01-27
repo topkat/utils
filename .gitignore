@@ -25,6 +25,7 @@ testem.log
 /typings
 tests/env.json
 env.json
+.env
 
 # e2e
 /e2e/*.js
@@ -43,3 +44,6 @@ Thumbs.db
 .DS_Store
 Thumbs.db
 *.pem
+
+# npm tokens
+.npmrc
