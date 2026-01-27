@@ -461,3 +461,19 @@ export function createProxy<T extends Record<string, any>>(obj: T, optn: {
         }
     })
 }
+
+/** Revert object keys and values. 
+ * @example revertObjectKeysAndValues({ a: 1, b: 2 }) => { 1: 'a', 2: 'b' }
+ * @param obj Object to revert
+ * @returns New object with keys and values swapped
+ */
+export function revertObjectKeysAndValues<
+    T extends Record<keyof T, string | number | symbol>
+>(obj: T): { [K in keyof T as T[K]]: K } {
+    const result = {} as { [K in keyof T as T[K]]: K }
+    for (const key in obj) {
+        const value = obj[key]
+            ; (result as any)[value] = key
+    }
+    return result
+}
