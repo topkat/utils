@@ -50,11 +50,11 @@
   "scripts": {
     "build": "tsc",
     "// Please run BUMP command with NPM not Yarn": "",
-    "bump": "yarn test:ci && yarn build && dotenv -- bump --patch",
-    "bump:fast": "yarn build && dotenv -- bump --patch",
-    "bump:major": "yarn test:ci && yarn build && dotenv -- bump --major",
-    "bump:minor": "yarn test:ci && yarn build && dotenv -- bump --minor",
-    "bump:patch": "yarn test:ci && yarn build && dotenv -- bump --patch",
+    "bump": "dotenv -- bash -c 'yarn test:ci && yarn build && bump --patch'",
+    "bump:fast": "dotenv -- bash -c 'yarn build && bump --patch'",
+    "bump:major": "dotenv -- bash -c 'yarn test:ci && yarn build && bump --major'",
+    "bump:minor": "dotenv -- bash -c 'yarn test:ci && yarn build && bump --minor'",
+    "bump:patch": "dotenv -- bash -c 'yarn test:ci && yarn build && bump --patch'",
     "test": "jest --watchAll",
     "test:ci": "jest --ci --runInBand --maxConcurrency=1 --silent --no-watchman"
   },

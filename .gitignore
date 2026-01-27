@@ -47,3 +47,4 @@ Thumbs.db
 
 # npm tokens
 .npmrc
+yarn-error.log
