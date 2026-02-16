@@ -148,7 +148,7 @@ export function cloneObject<MainObj extends Record<string, any>>(o: MainObj): Ma
 }
 
 /** Deep clone. WILL REMOVE circular references */
-export function deepClone<MainObj extends Record<string, any>>(obj: MainObj, cache = []): MainObj {
+export function deepClone<MainObj extends Record<string, any>>(obj: MainObj, cache: any[] = []): MainObj {
 
     let copy: any | any[]
     // usefull to not modify 1st level objet by lower levels
