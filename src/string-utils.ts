@@ -51,7 +51,9 @@ export function titleCase(...wordBits: string[] | [string[]]): string {
     return capitalize1st(wordBitsReal.filter(e => e).map(w => w.trim()).join(''), true)
 }
 
-export function capitalize1st(str = '', lowercaseTheRest = false): string { return str ? str[0].toUpperCase() + (lowercaseTheRest ? str.toLowerCase() : str).slice(1) : str }
+export function capitalize1st<S extends string>(str: S = '' as any, lowercaseTheRest = false): Capitalize<S> {
+    return (str ? str[0].toUpperCase() + (lowercaseTheRest ? str.toLowerCase() : str).slice(1) : str) as Capitalize<S>
+}
 
 export function camelCaseToWords(str: string): string[] {
     return str ? str.trim().replace(/([A-Z])/g, '-$1').toLowerCase().split('-') : []
