@@ -22,7 +22,10 @@ export function humanReadableTimestamp(dateAllFormat: DateAllFormat): number {
  */
 export function getDateAsInt(dateAllFormat: DateAllFormat = new Date(), errIfNotValid$ = false, withHoursAndMinutes$ = false): string { // optional
     let dateInt
-    if (typeof dateAllFormat === 'string' && dateAllFormat.includes('/')) {
+    const isString = typeof dateAllFormat === 'string'
+    if (isString && /^\d{4}-\d{2}-\d{2}$/.test(dateAllFormat)) {
+        dateInt = (dateAllFormat.split('-').join('') + '0000').substring(0, 12)
+    } else if (isString && dateAllFormat.includes('/')) {
         // 01/01/2020 format
         const [d, m, y] = dateAllFormat.split('/')
         return y + m.toString().padStart(2, '0') + d.toString().padStart(2, '0')
